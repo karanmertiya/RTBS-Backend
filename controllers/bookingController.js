@@ -2,11 +2,14 @@ const db = require('../db');
 
 // CREATE Booking
 exports.createBooking = (req, res) => {
-    const { customer_name, contact_number, email, table_number, number_of_guests, booking_date, booking_time, special_request } = req.body;
-    const query = `INSERT INTO Table_Booking (customer_name, contact_number, email, table_number, number_of_guests, booking_date, booking_time, special_request) 
-                   VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
+    const { customer_name, contact_number, email, table_number, number_of_guests, booking_date, booking_time, special_request, status, advance_payment } = req.body;
+    const query = `INSERT INTO Table_Booking (customer_name, contact_number, email, table_number, number_of_guests, booking_date, booking_time, special_request, status, advance_payment) 
+                   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 
-    db.run(query, [customer_name, contact_number, email, table_number, number_of_guests, booking_date, booking_time, special_request], function (err) {
+    const finalStatus = status || 'Booked';
+    const finalAdvancePayment = advance_payment || 0;
+
+    db.run(query, [customer_name, contact_number, email, table_number, number_of_guests, booking_date, booking_time, special_request, finalStatus, finalAdvancePayment], function (err) {
         if (err) return res.status(500).json({ error: err.message });
         res.status(201).json({ message: "Booking created successfully", booking_id: this.lastID });
     });
@@ -31,11 +34,13 @@ exports.getBookingById = (req, res) => {
 
 // UPDATE Booking
 exports.updateBooking = (req, res) => {
-    const { customer_name, contact_number, email, table_number, number_of_guests, booking_date, booking_time, special_request } = req.body;
-    const query = `UPDATE Table_Booking SET customer_name=?, contact_number=?, email=?, table_number=?, number_of_guests=?, booking_date=?, booking_time=?, special_request=? 
+    const { customer_name, contact_number, email, table_number, number_of_guests, booking_date, booking_time, special_request, status, advance_payment } = req.body;
+    
+    // We update updated_at manually to CURRENT_TIMESTAMP since SQLite triggers for ON UPDATE are complex
+    const query = `UPDATE Table_Booking SET customer_name=?, contact_number=?, email=?, table_number=?, number_of_guests=?, booking_date=?, booking_time=?, special_request=?, status=?, advance_payment=?, updated_at=CURRENT_TIMESTAMP 
                    WHERE booking_id=?`;
 
-    db.run(query, [customer_name, contact_number, email, table_number, number_of_guests, booking_date, booking_time, special_request, req.params.id], function (err) {
+    db.run(query, [customer_name, contact_number, email, table_number, number_of_guests, booking_date, booking_time, special_request, status, advance_payment, req.params.id], function (err) {
         if (err) return res.status(500).json({ error: err.message });
         if (this.changes === 0) return res.status(404).json({ message: "Booking not found" });
         res.json({ message: "Booking updated successfully" });
