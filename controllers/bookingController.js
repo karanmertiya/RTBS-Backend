@@ -2,6 +2,15 @@ const db = require('../db');
 
 exports.createBooking = (req, res) => {
     const { customer_name, contact_number, email, table_number, number_of_guests, booking_date, booking_time, special_request, status, advance_payment } = req.body;
+    
+    const today = new Date();
+    today.setHours(0,0,0,0);
+    const selectedDate = new Date(booking_date);
+    selectedDate.setHours(0,0,0,0);
+    if (selectedDate < today) {
+        return res.status(400).json({ error: "booking_date must be greater than or equal to CURRENT_DATE" });
+    }
+
     const query = `INSERT INTO Table_Booking (customer_name, contact_number, email, table_number, number_of_guests, booking_date, booking_time, special_request, status, advance_payment) 
                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 
@@ -31,6 +40,14 @@ exports.getBookingById = (req, res) => {
 
 exports.updateBooking = (req, res) => {
     const { customer_name, contact_number, email, table_number, number_of_guests, booking_date, booking_time, special_request, status, advance_payment } = req.body;
+    
+    const today = new Date();
+    today.setHours(0,0,0,0);
+    const selectedDate = new Date(booking_date);
+    selectedDate.setHours(0,0,0,0);
+    if (selectedDate < today) {
+        return res.status(400).json({ error: "booking_date must be greater than or equal to CURRENT_DATE" });
+    }
     
     const query = `UPDATE Table_Booking SET customer_name=?, contact_number=?, email=?, table_number=?, number_of_guests=?, booking_date=?, booking_time=?, special_request=?, status=?, advance_payment=?, updated_at=CURRENT_TIMESTAMP 
                    WHERE booking_id=?`;
