@@ -1,6 +1,5 @@
 const db = require('../db');
 
-// CREATE Booking
 exports.createBooking = (req, res) => {
     const { customer_name, contact_number, email, table_number, number_of_guests, booking_date, booking_time, special_request, status, advance_payment } = req.body;
     const query = `INSERT INTO Table_Booking (customer_name, contact_number, email, table_number, number_of_guests, booking_date, booking_time, special_request, status, advance_payment) 
@@ -15,7 +14,6 @@ exports.createBooking = (req, res) => {
     });
 };
 
-// READ All Bookings
 exports.getAllBookings = (req, res) => {
     db.all("SELECT * FROM Table_Booking ORDER BY booking_date DESC, booking_time DESC", [], (err, rows) => {
         if (err) return res.status(500).json({ error: err.message });
@@ -23,7 +21,6 @@ exports.getAllBookings = (req, res) => {
     });
 };
 
-// READ Single Booking
 exports.getBookingById = (req, res) => {
     db.get("SELECT * FROM Table_Booking WHERE booking_id = ?", [req.params.id], (err, row) => {
         if (err) return res.status(500).json({ error: err.message });
@@ -32,11 +29,9 @@ exports.getBookingById = (req, res) => {
     });
 };
 
-// UPDATE Booking
 exports.updateBooking = (req, res) => {
     const { customer_name, contact_number, email, table_number, number_of_guests, booking_date, booking_time, special_request, status, advance_payment } = req.body;
     
-    // We update updated_at manually to CURRENT_TIMESTAMP since SQLite triggers for ON UPDATE are complex
     const query = `UPDATE Table_Booking SET customer_name=?, contact_number=?, email=?, table_number=?, number_of_guests=?, booking_date=?, booking_time=?, special_request=?, status=?, advance_payment=?, updated_at=CURRENT_TIMESTAMP 
                    WHERE booking_id=?`;
 
@@ -47,7 +42,6 @@ exports.updateBooking = (req, res) => {
     });
 };
 
-// DELETE Booking
 exports.deleteBooking = (req, res) => {
     db.run("DELETE FROM Table_Booking WHERE booking_id = ?", [req.params.id], function (err) {
         if (err) return res.status(500).json({ error: err.message });

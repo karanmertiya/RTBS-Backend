@@ -9,11 +9,9 @@ const db = new sqlite3.Database(dbPath, (err) => {
     } else {
         console.log('Connected to SQLite Database');
         
-        // Drop the existing table to apply the strict new schema constraints
         db.run('DROP TABLE IF EXISTS Table_Booking', (err) => {
             if (err) console.error("Error dropping table", err);
             
-            // Auto-create the table with strict PDF constraints
             db.run(`
                 CREATE TABLE Table_Booking (
                     booking_id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -34,7 +32,7 @@ const db = new sqlite3.Database(dbPath, (err) => {
                 if (err) {
                     console.error("Error creating table", err);
                 } else {
-                    console.log("Strict Table_Booking schema is ready");
+                    console.log("Table_Booking schema is ready");
                 }
             });
         });
